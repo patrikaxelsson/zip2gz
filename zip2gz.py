@@ -8,15 +8,12 @@
 import zipfile
 import struct
 import sys
-import StringIO
 import os
-import datetime
-import time
 
 if len(sys.argv) == 2:
     zipFileName = sys.argv[1]
 else:
-    sys.exit("Usage: " + sys.argv[0].rsplit("/", 1)[-1] + " [zipFile]")
+    sys.exit("Usage: " + sys.argv[0].rsplit("/", 1)[-1] + " zipFile")
 
 def skipZipHeader(zipInfo, rawZipFile):
     # Use definitions found in pythons zipfile.py to skip the header
