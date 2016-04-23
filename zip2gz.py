@@ -49,13 +49,13 @@ for zipInfo in zipFile.infolist():
         # Now we are where the deflate data starts
         if zipfile.ZIP_STORED == zipInfo.compress_type:
             print zipInfo.filename
-            outputFile = file(zipInfo.filename, 'w')
+            outputFile = file(zipInfo.filename, 'wb')
             outputFile.write(rawZipFile.read(zipInfo.compress_size))
             outputFile.close()
         elif zipfile.ZIP_DEFLATED == zipInfo.compress_type:
             gzipFilename = zipInfo.filename + ".gz"
             print gzipFilename
-            outputFile = file(gzipFilename, 'w')
+            outputFile = file(gzipFilename, 'wb')
             outputFile.write(createGzipHeader(zipInfo))
             rawData = rawZipFile.read(zipInfo.compress_size)
             outputFile.write(rawData)
