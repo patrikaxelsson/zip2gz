@@ -42,20 +42,22 @@ for zipInfo in zipFile.infolist():
     dirName, fileName = posixpath.split(zipInfo.filename)
     if "" == fileName:
         print zipInfo.filename
-        os.makedirs(dirName)
+        # Check to not fail if a path is specified twice
+        if not os.path.isdir(dirName):
+            os.makedirs(dirName)
     else:
         rawZipFile.seek(zipInfo.header_offset)
         skipZipHeader(zipInfo, rawZipFile)
         # Now we are where the deflate data starts
         if zipfile.ZIP_STORED == zipInfo.compress_type:
             print zipInfo.filename
-            outputFile = file(zipInfo.filename, 'wb')
+            outputFile = file(zipInfo.filename, "wb")
             outputFile.write(rawZipFile.read(zipInfo.compress_size))
             outputFile.close()
         elif zipfile.ZIP_DEFLATED == zipInfo.compress_type:
             gzipFilename = zipInfo.filename + ".gz"
             print gzipFilename
-            outputFile = file(gzipFilename, 'wb')
+            outputFile = file(gzipFilename, "wb")
             outputFile.write(createGzipHeader(zipInfo))
             rawData = rawZipFile.read(zipInfo.compress_size)
             outputFile.write(rawData)
