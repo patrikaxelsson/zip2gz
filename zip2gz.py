@@ -9,11 +9,12 @@ import zipfile
 import struct
 import sys
 import os
+import posixpath
 
 if len(sys.argv) == 2:
     zipFileName = sys.argv[1]
 else:
-    sys.exit("Usage: " + sys.argv[0].rsplit("/", 1)[-1] + " zipFile")
+    sys.exit("Usage: " + os.path.basename(sys.argv[0]) + " zipFile")
 
 def skipZipHeader(zipInfo, rawZipFile):
     # Use definitions found in pythons zipfile.py to skip the header
@@ -38,11 +39,10 @@ def createGzipFooter(zipInfo):
 zipFile = zipfile.ZipFile(zipFileName)
 rawZipFile = file(zipFileName)
 for zipInfo in zipFile.infolist():
-    dirName, fileName = zipInfo.filename.rsplit("/", 1)
+    dirName, fileName = posixpath.split(zipInfo.filename)
     if "" == fileName:
         print zipInfo.filename
-        if not os.path.isdir(dirName):
-            os.makedirs(dirName)
+        os.makedirs(dirName)
     else:
         rawZipFile.seek(zipInfo.header_offset)
         skipZipHeader(zipInfo, rawZipFile)
