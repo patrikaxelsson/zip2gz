@@ -34,14 +34,14 @@ def createGzipHeader(zipInfo):
     return struct.pack("<BBBBLBB", magic1, magic2, compressionMethod, flags, timestamp, compressionFlags, operatingSystem)
 
 def createGzipFooter(zipInfo):
-    return struct.pack("<LL", zipInfo.CRC, zipInfo.file_size & 0xffffffffL)
+    return struct.pack("<LL", zipInfo.CRC, zipInfo.file_size & 0xffffffff)
 
 zipFile = zipfile.ZipFile(zipFileName)
-rawZipFile = file(zipFileName)
+rawZipFile = open(zipFileName, 'rb')
 for zipInfo in zipFile.infolist():
     dirName, fileName = posixpath.split(zipInfo.filename)
     if "" == fileName:
-        print zipInfo.filename
+        print(zipInfo.filename)
         # Check to not fail if a path is specified twice
         if not os.path.isdir(dirName):
             os.makedirs(dirName)
@@ -50,14 +50,14 @@ for zipInfo in zipFile.infolist():
         skipZipHeader(zipInfo, rawZipFile)
         # Now we are where the deflate data starts
         if zipfile.ZIP_STORED == zipInfo.compress_type:
-            print zipInfo.filename
-            outputFile = file(zipInfo.filename, "wb")
+            print(zipInfo.filename)
+            outputFile = open(zipInfo.filename, "wb")
             outputFile.write(rawZipFile.read(zipInfo.compress_size))
             outputFile.close()
         elif zipfile.ZIP_DEFLATED == zipInfo.compress_type:
             gzipFilename = zipInfo.filename + ".gz"
-            print gzipFilename
-            outputFile = file(gzipFilename, "wb")
+            print(gzipFilename)
+            outputFile = open(gzipFilename, "wb")
             outputFile.write(createGzipHeader(zipInfo))
             rawData = rawZipFile.read(zipInfo.compress_size)
             outputFile.write(rawData)
